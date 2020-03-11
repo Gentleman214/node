@@ -7,7 +7,8 @@ var User = sequelize.define('user',{
     primaryKey: true
   },
   name: Sequelize.STRING(20),
-  password: Sequelize.STRING(20)
+  password: Sequelize.STRING(20),
+  staffId: Sequelize.STRING(20)
 },
 {
   timestamps: false,

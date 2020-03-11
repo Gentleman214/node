@@ -1,17 +1,19 @@
 const User = require('../../model/user/user')
 
-var getUserInfoById = function(id) {
+var getUserInfoByStaffId = function(id) {
   return User.findAll({
     where: {
-      id: id
+      staffId: id
     }
   })
  }
 
- var setUserInfo = function(form) {
-  return User.create({
-    name: form.name,
-    password: form.password
+ var login = function(form) {
+  return User.findAll({
+    where: {
+      staffId: form.staffId,
+      password: form.password
+    }
   })
  }
 
@@ -35,8 +37,8 @@ var getUserInfoById = function(id) {
  }
 
  var userService = {
-    getUserInfoById,
-    setUserInfo,
+    getUserInfoByStaffId,
+    login,
     updateUserInfoById,
     deleteUserById
  }

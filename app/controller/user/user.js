@@ -3,13 +3,13 @@ const app = express()
 const bodyParser = require('body-parser')
 const userService = require('../../service/user/user')
 const resBody = require('../../middleware/responseBody')
+const jwt = require('jsonwebtoken');  //用来生成token
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended:false }))
 
 app.get('/api/user/:id', function (req, res) {
-  userService.getUserInfoById(req.params.id).then(data => {
-    if(data.length) res.json(resBody(200, data))
-    else res.json(resBody(404, data))
+  userService.getUserInfoByStaffId(req.params.id).then(data => {
+    res.json(resBody(200, data))
   })
   .catch(err => {
     res.json(resBody(500))
@@ -20,17 +20,24 @@ app.get('/api/user/:id', function (req, res) {
   }) */
 })
 
-app.post('/api/user/register', function (req, res, next) {
-let registerForm = {
-    "name": req.body.name,
+app.post('/api/user/login', function (req, res, next) {
+let loginForm = {
+    "staffId": req.body.staffId,
     "password": req.body.password
   }
-//   console.log(loginForm)
-//var looginForm = JSON.parse(JSON.stringify(req.body))
- // console.log(JSON.parse(JSON.stringify(req.body)).name)
- //res.send('ok')
-   userService.setUserInfo(registerForm).then((data) => {
-    res.json(resBody(200, data.dataValues))
+   userService.login(loginForm).then((data) => {
+    if (data.length) {
+      let content = {
+        name:req.body.staffId
+      }
+      let secretOrPrivateKey="jwt";// 这是加密的key（密钥）
+      let token = jwt.sign(content, secretOrPrivateKey, {
+                expiresIn: 60*60*1  // 1小时过期
+              })
+      res.json({code:200,msg:'ok',token:token,staffId:req.body.staffId})
+    } else {
+      res.send('用户名或密码错误')
+    }
   })
   .catch(err => {
     res.json(resBody(500))
