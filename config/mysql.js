@@ -1,5 +1,5 @@
 var DBhelper = {
-  database: 'test',
+  database: 'storage_system',
   username: 'root',
   password: '123456',
   host: 'localhost',

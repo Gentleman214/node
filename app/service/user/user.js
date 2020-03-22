@@ -1,22 +1,22 @@
 const User = require('../../model/user/user')
 
-var getUserInfoByStaffId = function(id) {
-  return User.findAll({
-    where: {
-      staffId: id
-    }
-  })
- }
-
  var login = function(form) {
-  return User.findAll({
+  return User.findOne({
     where: {
-      staffId: form.staffId,
+      staff_id: form.staffId,
       password: form.password
     }
   })
  }
 
+ var getUserInfoByStaffId = function(staffId) {
+  return User.findOne({
+    where: {
+      staff_id: staffId
+    }
+  })
+ }
+ 
  var updateUserInfoById = function(form) {
    return User.update({
      name: form.name,

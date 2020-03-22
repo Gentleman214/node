@@ -4,11 +4,12 @@ const bodyParser = require('body-parser')
 const userService = require('../../service/user/user')
 const resBody = require('../../middleware/responseBody')
 const jwt = require('jsonwebtoken');  //用来生成token
+const secret ="storage_system";// 这是加密的key（密钥）
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended:false }))
 
-app.get('/api/user/:id', function (req, res) {
-  userService.getUserInfoByStaffId(req.params.id).then(data => {
+app.get('/api/user/:staffId', function (req, res) {
+  userService.getUserInfoByStaffId(req.params.staffId).then(data => {
     res.json(resBody(200, data))
   })
   .catch(err => {
@@ -20,23 +21,28 @@ app.get('/api/user/:id', function (req, res) {
   }) */
 })
 
+// 登录
 app.post('/api/user/login', function (req, res, next) {
 let loginForm = {
     "staffId": req.body.staffId,
     "password": req.body.password
   }
-   userService.login(loginForm).then((data) => {
-    if (data.length) {
-      let content = {
-        name:req.body.staffId
+  userService.login(loginForm).then((data) => {
+    if (data && data.staff_id) {
+      let payload = {
+        staffId:req.body.staffId
       }
-      let secretOrPrivateKey="jwt";// 这是加密的key（密钥）
-      let token = jwt.sign(content, secretOrPrivateKey, {
+      let token = jwt.sign(payload, secret , {
                 expiresIn: 60*60*1  // 1小时过期
               })
-      res.json({code:200,msg:'ok',token:token,staffId:req.body.staffId})
+      let resData = {
+        token: token,
+        staffId: data.staff_id,
+        name: data.name
+      }
+      res.json(resBody(200, resData, '登录成功'))
     } else {
-      res.send('用户名或密码错误')
+      res.json(resBody(401, null, '用户名或密码错误'))
     }
   })
   .catch(err => {
@@ -48,6 +54,27 @@ let loginForm = {
   }) */
 })
 
+// 效验token是否有效
+app.post('/api/user/checkAuth', (req, res, next) => {
+  let tokenStr = req.body.token
+  let staffId = ''
+  try {
+    staffId = jwt.verify(tokenStr, secret).staffId
+  } catch (e) {
+    res.json({code:403, succeed:false, msg:'invalid token'})
+  }
+  if (staffId) {
+    userService.getUserInfoByStaffId(staffId).then(data => {
+      if (data && data.staff_id) {
+        res.json({code:200,succeed:true})
+      } else {
+        res.json({code:401,succeed:false, msg:'invalid token'})
+      }
+    })
+  } else {
+    res.json({code:401,succeed:false, msg:'invalid token'})
+  }
+})
 app.post('/api/user/update', function (req, res, next) {
   let updateForm = {
       "id": req.body.id,
