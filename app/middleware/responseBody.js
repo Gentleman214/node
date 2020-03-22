@@ -5,7 +5,7 @@ const Code = [
   500 // 服务器错误
 ]
 
-var setResponseBody = function(code, data={}, userMsg='') {
+var setResponseBody = function (code, data = {}, userMsg = '') {
   switch (code) {
     case Code[0]:
       return {

@@ -5,9 +5,9 @@ var sequelize = new Sequelize(DBhelper.database, DBhelper.username, DBhelper.pas
   host: DBhelper.host,
   dialect: 'mysql',
   pool: {
-      max: 5,
-      min: 0,
-      idle: 30000
+    max: 5,
+    min: 0,
+    idle: 30000
   }
 });
 
