@@ -23,6 +23,7 @@ var getUserInfo = function (params) {
   let limit = params.size || 10
   let staffId = params.staffId || ''
   let name = params.name || ''
+  let authority = params.authority || ''
   return User.findAndCountAll({
     where: {
       staff_id: {
@@ -31,6 +32,9 @@ var getUserInfo = function (params) {
       name: {
         [Op.like]:'%' + name + '%'
       },
+      authority: {
+        [Op.like]:'%' + authority + '%'
+      }
     },
     offset,
     limit: limit,
