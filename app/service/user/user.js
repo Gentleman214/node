@@ -1,5 +1,6 @@
 const User = require('../../model/user/user')
-
+const Sequelize = require('sequelize')
+const Op = Sequelize.Op
 var login = function (form) {
   return User.findOne({
     where: {
@@ -14,6 +15,26 @@ var getUserInfoByStaffId = function (staffId) {
     where: {
       staff_id: staffId
     }
+  })
+}
+
+var getUserInfo = function (params) {
+  let offset = (params.current - 1) * params.size || 0
+  let limit = params.size || 10
+  let staffId = params.staffId || ''
+  let name = params.name || ''
+  return User.findAndCountAll({
+    where: {
+      staff_id: {
+        [Op.like]:'%' + staffId + '%'
+      },
+      name: {
+        [Op.like]:'%' + name + '%'
+      },
+    },
+    offset,
+    limit: limit,
+    attributes: [ ['staff_id', 'staffId'], 'name', 'gender', 'phone', 'age', 'authority' ]
   })
 }
 
@@ -37,8 +58,9 @@ var deleteUserById = function (id) {
 }
 
 var userService = {
-  getUserInfoByStaffId,
   login,
+  getUserInfoByStaffId,
+  getUserInfo,
   updateUserInfoById,
   deleteUserById
 }

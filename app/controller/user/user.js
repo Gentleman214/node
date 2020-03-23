@@ -8,19 +8,6 @@ const secret = "storage_system";// 这是加密的key（密钥）
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
-app.get('/api/user/:staffId', function (req, res) {
-  userService.getUserInfoByStaffId(req.params.staffId).then(data => {
-    res.json(resBody(200, data))
-  })
-    .catch(err => {
-      res.json(resBody(500))
-      console.log(err)
-    })
-  /*  .finally( () => {
-     sequelize.close()
-   }) */
-})
-
 // 登录
 app.post('/api/user/login', function (req, res, next) {
   let loginForm = {
@@ -47,7 +34,6 @@ app.post('/api/user/login', function (req, res, next) {
   })
     .catch(err => {
       res.json(resBody(500))
-      console.log(err)
     })
   /*  .finally( () => {
      sequelize.close()
@@ -75,6 +61,28 @@ app.post('/api/user/checkAuth', (req, res, next) => {
     res.json({ code: 401, succeed: false, msg: 'invalid token' })
   }
 })
+
+// 单个查询
+app.get('/api/user/:staffId', function (req, res) {
+  userService.getUserInfoByStaffId(req.params.staffId).then(data => {
+    res.json(resBody(200, data))
+  })
+    .catch(err => {
+      res.json(resBody(500))
+    })
+})
+
+// 查询所有（分页查询）
+app.post('/api/user', (req, res) => {
+  userService.getUserInfo(req.body).then(data => {
+    res.json(resBody(200, { 'records': data.rows, 'total': data.count }))
+  })
+    .catch(err => {
+      res.json(resBody(500))
+      // console.log(err)
+    })
+})
+
 app.post('/api/user/update', function (req, res, next) {
   let updateForm = {
     "id": req.body.id,
