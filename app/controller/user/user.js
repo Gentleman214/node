@@ -22,10 +22,12 @@ app.post('/api/user/login', function (req, res, next) {
       let token = jwt.sign(payload, secret, {
         expiresIn: 60 * 60 * 1  // 1小时过期
       })
+      let shouldModifyDefaultPassword = data.is_default_password === 1 ? true : false
       let resData = {
         token: token,
         staffId: data.staff_id,
-        name: data.name
+        name: data.name,
+        modify: shouldModifyDefaultPassword
       }
       res.json(resBody(200, resData, '登录成功'))
     } else {

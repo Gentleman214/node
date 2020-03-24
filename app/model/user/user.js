@@ -11,7 +11,8 @@ var User = sequelize.define('user', {
   gender: Sequelize.STRING(2),
   phone: Sequelize.STRING(11),
   age: Sequelize.INTEGER(3),
-  authority: Sequelize.INTEGER(1)
+  authority: Sequelize.INTEGER(1),
+  is_default_password: Sequelize.TINYINT(1)
 },
   {
     timestamps: false,
