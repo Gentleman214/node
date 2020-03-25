@@ -64,6 +64,38 @@ app.post('/api/user/checkAuth', (req, res, next) => {
   }
 })
 
+// 改密码时效验旧密码是否正确
+app.post('/api/user/checkPassword', (req, res, next) => {
+  userService.checkPassword(req.body).then(data => {
+    if (data && data.staff_id) {
+      res.json({ code: 200, flag: true, userMsg: '' })
+    } else {
+      res.json({ code: 200, flag: false, userMsg: '原密码输入错误' })
+    }
+  })
+})
+
+// 修改密码
+app.post('/api/user/changePassword', (req, res, next) => {
+  userService.changePassword(req.body).then(data => {
+    if (data && data[0] === 1) {
+      res.json({ code: 200, userMsg: '修改成功' })
+    } else {
+      res.json({ code: 500, userMsg: '修改失败' })
+    }
+  })
+})
+
+// 单个查询(基础信息：姓名工号等)
+app.get('/api/user/info/:staffId', function (req, res) {
+  userService.getSimpleUserInfoByStaffId(req.params.staffId).then(data => {
+    res.json(resBody(200, data))
+  })
+    .catch(err => {
+      res.json(resBody(500))
+    })
+})
+
 // 单个查询
 app.get('/api/user/:staffId', function (req, res) {
   userService.getUserInfoByStaffId(req.params.staffId).then(data => {

@@ -18,6 +18,33 @@ var getUserInfoByStaffId = function (staffId) {
   })
 }
 
+var getSimpleUserInfoByStaffId  = function (staffId) {
+  return User.findOne({
+    where: {
+      staff_id: staffId
+    },
+    attributes: [ ['staff_id', 'staffId'], 'name' ]
+  })
+}
+
+var checkPassword = function (params) {
+  return User.findOne({
+    where: {
+      staff_id: params.staffId,
+      password: params.password
+    }
+  })
+}
+
+var changePassword = function (params) {
+  return User.update({ password: params.password, is_default_password: 0 }, {
+    where: {
+      staff_id: params.staffId
+    }
+  })
+
+}
+
 var getUserInfo = function (params) {
   let offset = (params.current - 1) * params.size || 0
   let limit = params.size || 10
@@ -62,9 +89,12 @@ var deleteUserById = function (id) {
 }
 
 var userService = {
-  login,
-  getUserInfoByStaffId,
-  getUserInfo,
+  login, // 登陆
+  getUserInfoByStaffId, // 获取单个用户信息（完整信息）
+  getSimpleUserInfoByStaffId, // 获取单个用户信息（简单信息）
+  getUserInfo, // 分页获取用户信息
+  checkPassword, // 修改密码时效验旧密码是否对
+  changePassword, // 修改密码
   updateUserInfoById,
   deleteUserById
 }
