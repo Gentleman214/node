@@ -48,9 +48,9 @@ var changePassword = function (params) {
 var getUserInfo = function (params) {
   let offset = (params.current - 1) * params.size || 0
   let limit = params.size || 10
-  let staffId = params.staffId || ''
-  let name = params.name || ''
-  let authority = params.authority || ''
+  let staffId = params.staffId
+  let name = params.name
+  let authority = params.authority
   return User.findAndCountAll({
     where: {
       staff_id: {
