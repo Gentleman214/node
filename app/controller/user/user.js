@@ -23,13 +23,14 @@ app.post('/api/user/login', function (req, res, next) {
         expiresIn: 60 * 60 * 1  // 1小时过期
       })
       let shouldModifyDefaultPassword = data.is_default_password === 1
-      let isManage = data.authority === 1
+      let perfect = data.birthday === null || data.gender === null || data.phone === null
       let resData = {
         token: token,
         staffId: data.staff_id,
         name: data.name,
         modify: shouldModifyDefaultPassword,
-        isManage: isManage
+        authority: data.authority,
+        perfect: perfect
       }
       res.json(resBody(200, resData, '登录成功'))
     } else {
@@ -119,7 +120,7 @@ app.post('/api/user', (req, res) => {
   })
     .catch(err => {
       res.json(resBody(500))
-      // console.log(err)
+      console.log(err)
     })
 })
 
