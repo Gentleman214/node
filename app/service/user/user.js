@@ -14,7 +14,8 @@ var getUserInfoByStaffId = function (staffId) {
   return User.findOne({
     where: {
       staff_id: staffId
-    }
+    },
+    attributes: { exclude: ['password', 'is_default_password'] }
   })
 }
 
@@ -69,15 +70,36 @@ var getUserInfo = function (params) {
   })
 }
 
-var updateUserInfoById = function (form) {
-  return User.update({
-    name: form.name,
-    password: form.password
-  }, {
-    where: {
-      id: form.id
-    }
-  })
+var addOrUpdateUserInfo = function (params) {
+  if(!params.staff_id) {
+    return User.create({
+      password: '000000',
+      name: params.name,
+      gender: params.gender,
+      phone: params.phone,
+      head_pic: params.head_pic,
+      authority: params.authority,
+      birthday: params.birthday,
+      hiredate: params.hiredate,
+      role: params.role,
+      is_default_password: 1
+    })
+  } else {
+    return User.update({
+      name: params.name,
+      gender: params.gender,
+      phone: params.phone,
+      head_pic: params.head_pic,
+      authority: params.authority,
+      birthday: params.birthday,
+      hiredate: params.hiredate,
+      role: params.role
+    }, {
+      where: {
+        staff_id: params.staff_id
+      }
+    })
+  }
 }
 
 var deleteUserById = function (id) {
@@ -95,7 +117,7 @@ var userService = {
   getUserInfo, // 分页获取用户信息
   checkPassword, // 修改密码时效验旧密码是否对
   changePassword, // 修改密码
-  updateUserInfoById,
+  addOrUpdateUserInfo, // 新增或编辑用户信息
   deleteUserById
 }
 module.exports = userService

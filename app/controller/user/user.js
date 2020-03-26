@@ -22,12 +22,14 @@ app.post('/api/user/login', function (req, res, next) {
       let token = jwt.sign(payload, secret, {
         expiresIn: 60 * 60 * 1  // 1小时过期
       })
-      let shouldModifyDefaultPassword = data.is_default_password === 1 ? true : false
+      let shouldModifyDefaultPassword = data.is_default_password === 1
+      let isManage = data.authority === 1
       let resData = {
         token: token,
         staffId: data.staff_id,
         name: data.name,
-        modify: shouldModifyDefaultPassword
+        modify: shouldModifyDefaultPassword,
+        isManage: isManage
       }
       res.json(resBody(200, resData, '登录成功'))
     } else {
@@ -99,7 +101,11 @@ app.get('/api/user/info/:staffId', function (req, res) {
 // 单个查询
 app.get('/api/user/:staffId', function (req, res) {
   userService.getUserInfoByStaffId(req.params.staffId).then(data => {
-    res.json(resBody(200, data))
+    if (data && data.staff_id) {
+      res.json(resBody(200, data))
+    } else {
+      res.json({ code: 204, userMsg: '未查询到该用户的信息' })
+    }
   })
     .catch(err => {
       res.json(resBody(500))
@@ -117,18 +123,17 @@ app.post('/api/user', (req, res) => {
     })
 })
 
-app.post('/api/user/update', function (req, res, next) {
-  let updateForm = {
-    "id": req.body.id,
-    "name": req.body.name,
-    "password": req.body.password
-  }
-  userService.updateUserInfoById(updateForm).then((data) => {
-    res.json(resBody(200, data.dataValues))
+// 新增或编辑用户信息
+app.post('/api/user/addOrUpdate', function (req, res, next) {
+  userService.addOrUpdateUserInfo(req.body).then(data => {
+    if (data.dataValues) {
+      res.json(resBody(200, data.dataValues, '保存成功'))
+    } else {
+      res.json(resBody(200, req.body, '保存成功'))
+    }
   })
     .catch(err => {
       res.json(resBody(500))
-      console.log(err)
     })
 })
 
