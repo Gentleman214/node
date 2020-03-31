@@ -27,13 +27,15 @@ app.get('/api/role/menu', (req, res) => {
           let childrenId = item.children.split(',')
           roleService.getMenuChildren(childrenId).then(submenu => {
             resData[index].children = JSON.parse(JSON.stringify(submenu))
+            if (index === (resData.length - 1)) { // 循环完毕时把结果res.json出去
+              res.json(resBody(200, resData, '请求成功'))
+            }
           }).catch(err => {
             res.json(resBody(500))
           })
         }
       })
     }
-    setTimeout(() => res.json(resBody(200, resData, '请求成功')), 200)
   }).catch(err => {
     res.json(resBody(500))
   })
