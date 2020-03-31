@@ -16,4 +16,27 @@ app.get('/api/role/list', (req, res) => {
   })
 })
 
+app.get('/api/role/menu', (req, res) => {
+  let resData = []
+  let complete = false
+  roleService.getMenu().then(data => {
+    resData = JSON.parse(JSON.stringify(data))
+    if (resData && resData.length) {
+      resData.forEach((item, index) => {
+        if (item.children) {
+          let childrenId = item.children.split(',')
+          roleService.getMenuChildren(childrenId).then(submenu => {
+            resData[index].children = JSON.parse(JSON.stringify(submenu))
+          }).catch(err => {
+            res.json(resBody(500))
+          })
+        }
+      })
+    }
+    setTimeout(() => res.json(resBody(200, resData, '请求成功')), 200)
+  }).catch(err => {
+    res.json(resBody(500))
+  })
+})
+
 module.exports = app
