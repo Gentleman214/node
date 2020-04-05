@@ -124,6 +124,21 @@ app.post('/api/user', (req, res) => {
     })
 })
 
+// 关键字搜索（工号/姓名），权限管理页面搜索用户
+app.get('/api/user/keywords/:keywords', (req, res) => {
+  userService.getUserByStaffIdOrName(req.params.keywords).then(data => {
+    let resData = []
+    JSON.parse(JSON.stringify(data)).forEach(item => {
+      resData.push(`${item.staffId}-${item.name}`)
+    })
+    res.json(resBody(200, resData))
+  })
+    .catch(err => {
+      res.json(resBody(500))
+      console.log(err)
+    })
+})
+
 // 新增或编辑用户信息
 app.post('/api/user/addOrUpdate', function (req, res, next) {
   userService.addOrUpdateUserInfo(req.body).then(data => {

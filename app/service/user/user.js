@@ -82,6 +82,27 @@ var getUserInfo = function (params) {
   })
 }
 
+// 关键字搜索（工号/姓名），权限管理页面搜索用户
+var getUserByStaffIdOrName = function (keywords) {
+  return User.findAll({
+    where: {
+      [Op.or]: [
+        {
+          staff_id: {
+            [Op.like]:'%' + keywords + '%'
+          }
+        },
+        {
+          name: {
+            [Op.like]:'%' + keywords + '%'
+          }
+        }
+      ]
+    },
+    attributes: [ ['staff_id', 'staffId'], 'name' ]
+  })
+}
+
 // 新增或编辑用户信息
 var addOrUpdateUserInfo = function (params) {
   if(!params.staff_id) {
@@ -129,6 +150,7 @@ var userService = {
   getUserInfoByStaffId, // 获取单个用户信息（完整信息）
   getSimpleUserInfoByStaffId, // 获取单个用户信息（简单信息）
   getUserInfo, // 分页获取用户信息
+  getUserByStaffIdOrName, // 关键字搜索（工号/姓名），权限管理页面搜索用户
   checkPassword, // 修改密码时效验旧密码是否对
   changePassword, // 修改密码
   addOrUpdateUserInfo, // 新增或编辑用户信息

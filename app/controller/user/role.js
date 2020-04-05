@@ -8,7 +8,7 @@ const secret = "storage_system";// 这是加密的key（密钥）
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
-app.get('/api/role/list', (req, res) => {
+app.get('/api/role/list', (req, res) => { // 获取角色列表
   roleService.getRoleList().then(data => {
     res.json(resBody(200, data.rows, '请求成功'))
   }).catch(err => {
@@ -16,29 +16,59 @@ app.get('/api/role/list', (req, res) => {
   })
 })
 
-app.get('/api/role/menu', (req, res) => {
+app.get('/api/role/menu', (req, res) => { // 获取菜单
   let resData = []
-  let complete = false
+  let parentMenu = []
+  let childrenMenu = []
   roleService.getMenu().then(data => {
     resData = JSON.parse(JSON.stringify(data))
     if (resData && resData.length) {
-      resData.forEach((item, index) => {
-        if (item.children) {
-          let childrenId = item.children.split(',')
-          roleService.getMenuChildren(childrenId).then(submenu => {
-            resData[index].children = JSON.parse(JSON.stringify(submenu))
-            if (index === (resData.length - 1)) { // 循环完毕时把结果res.json出去
-              res.json(resBody(200, resData, '请求成功'))
+      parentMenu = resData.filter(item => item.parentId === '0')
+      childrenMenu = resData.filter(item => item.parentId !== '0')
+      if (childrenMenu && childrenMenu.length) {
+        parentMenu.forEach((item, index) => {
+          item.children = []
+          childrenMenu.forEach((subItem, subIndex) => {
+            if (subItem.parentId === item.key) {
+              parentMenu[index].children.push(subItem)
             }
-          }).catch(err => {
-            res.json(resBody(500))
           })
-        }
-      })
+        })
+      }
     }
+    console.log(resData)
+    resData = parentMenu.filter(item => item.parentId === '0')
+    res.json(resBody(200, resData, '请求成功'))
   }).catch(err => {
+    console.log(err)
     res.json(resBody(500))
   })
 })
 
+app.get('/api/role/menu/:id', (req, res) => { // 根据权限id获取菜单
+  let resData = []
+  let parentMenu = []
+  let childrenMenu = []
+  roleService.getMenuByAuthorityId(req.params.id).then(data => {
+    resData = JSON.parse(JSON.stringify(data))
+    if (resData && resData.length) {
+      parentMenu = resData.filter(item => item.parentId === '0')
+      childrenMenu = resData.filter(item => item.parentId !== '0')
+      if (childrenMenu && childrenMenu.length) {
+        parentMenu.forEach((item, index) => {
+          item.children = []
+          childrenMenu.forEach((subItem, subIndex) => {
+            if (subItem.parentId === item.key) {
+              parentMenu[index].children.push(subItem)
+            }
+          })
+        })
+      }
+    }
+    resData = parentMenu.filter(item => item.parentId === '0')
+    res.json(resBody(200, resData, '请求成功'))
+  }).catch(err => {
+    res.json(resBody(500))
+  })
+})
 module.exports = app

@@ -8,32 +8,33 @@ var getRoleList = function () {
   return Role.findAndCountAll()
 }
 
-var getMenu = function () {
+var getMenu = function () { // 获取所有菜单
+  return Menu.findAll({
+    attributes: [ ['id', 'key'], ['pid', 'parentId'], ['name', 'title'], ['index', 'sortIndex'],'children', 'icon', 'link' ]
+  })
+}
+
+
+var getMenuByAuthorityId = async function (id) { // 根据权限id获取菜单
+  let menu = []
+  await Role.findOne({
+    where: {
+      id: id
+    }
+  }).then(data => menu = data.dataValues.menu.split(','))
   return Menu.findAll({
     where: {
-      pid: '0'
+      id: {
+        [Op.in]: menu
+      }
     },
-    attributes: [ ['id', 'key'], ['pid', 'parentId'], ['name', 'title'], ['index', 'sortIndex'],'children', 'icon' ]
+    attributes: [ ['id', 'key'], ['pid', 'parentId'], ['name', 'title'], ['index', 'sortIndex'],'children', 'icon', 'link' ]
   })
 }
-
-var getMenuChildren = function (arr) {
-  let sqlQueue = []
-  arr.forEach(item => {
-    sqlQueue.push(Menu.findOne({
-      where: {
-        id: item
-      },
-      attributes: [ ['id', 'key'], ['pid', 'parentId'], ['name', 'title'], ['index', 'sortIndex'],'children', 'icon' ]
-    }))
-  })
-  return Promise.all(sqlQueue)
-}
-
 var roleService = {
   getRoleList, // 查询
-  getMenu, // 获取菜单
-  getMenuChildren // 获取子元素
+  getMenu, // 获取所有菜单
+  getMenuByAuthorityId // 根据权限ID获取菜单
 }
 module.exports = roleService
 

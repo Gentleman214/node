@@ -14,7 +14,8 @@ var Menu = sequelize.define('menu', {
   name: Sequelize.STRING(20), // 名字
   index: Sequelize.INTEGER(2), // 排序值
   icon: Sequelize.STRING(50), // 图标
-  children: Sequelize.STRING(255) // 二级菜单
+  children: Sequelize.STRING(255), // 二级菜单
+  link: Sequelize.STRING(50) // 路由
 },
   {
     timestamps: false,
