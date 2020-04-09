@@ -3,7 +3,7 @@ const sequelize = require('../index')
 
 var Supplier = sequelize.define('supplier', {
   id: {
-    type: Sequelize.STRING(10),
+    type: Sequelize.INTEGER(10),
     primaryKey: true,
     allowNull: false,
     autoIncrement: true
