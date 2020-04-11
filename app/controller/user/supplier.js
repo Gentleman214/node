@@ -16,6 +16,13 @@ app.post('/api/supplier/list', (req, res) => { // 获取供应商列表列表
   })
 })
 
+// 获取供应商列表（只需要id和name,主要为了下拉选择框初始化数据）
+app.post('/api/supplier/simpleList', (req, res) => {
+  supplierService.getSupplierSimpleList().then(data => {
+    res.json(resBody(200, data))
+  })
+})
+
 app.get('/api/supplier/:id', (req, res) => {
   supplierService.getSupplierInfoById(req.params.id).then(data => {
     res.json(resBody(200, data))

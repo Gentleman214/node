@@ -18,6 +18,13 @@ var getSupplier = function (params) {
   })
 }
 
+// 获取供应商列表（只需要id和name,主要为了下拉选择框初始化数据）
+var getSupplierSimpleList = function () {
+  return Supplier.findAll({
+    attributes: ['id', 'name']
+  })
+}
+
 var getSupplierInfoById = function (id) {
   return Supplier.findOne({
     where: {
@@ -61,6 +68,7 @@ var deleteSupplierById = function (id) {
 
 var supplierService = {
   getSupplier,
+  getSupplierSimpleList,
   getSupplierInfoById,
   addOrUpdateSupplier,
   deleteSupplierById

@@ -1,7 +1,9 @@
 const category = require('./category')
+const product = require('./product')
 
 var productCotroller = {
-  category
+  category,
+  product
 }
 
 module.exports = productCotroller

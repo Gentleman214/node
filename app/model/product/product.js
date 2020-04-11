@@ -22,11 +22,20 @@ var Product = sequelize.define('product', {
   stock_num: Sequelize.INTEGER(20), // 库存数量
   place: Sequelize.STRING(128), // 产地
   spec: Sequelize.STRING(64), // 商品规格
-  place: Sequelize.STRING(64), // 商品包装
+  pack: Sequelize.STRING(64), // 商品包装
+  unit: Sequelize.STRING(32), // 单位
+  price: {
+    type: Sequelize.FLOAT(10, 2),
+    allowNull: false
+  }, // 价格
+  remark: Sequelize.STRING(255), // 备注
+  manufacture_date: Sequelize.DATE(), // 生产日期
+  expiration_date: Sequelize.DATE(), // 过期日期
+  quality_guarantee_period: Sequelize.STRING(10) // 保质期
 },
   {
     timestamps: false,
     freezeTableName: true
   })
 
-module.exports = Category
+module.exports = Product
