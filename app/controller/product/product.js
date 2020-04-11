@@ -18,4 +18,31 @@ app.post('/api/product/list', (req, res) => {
     })
 })
 
+// 根据id获取商品信息
+app.get('/api/product/:id', (req, res) => {
+  productService.getProductInfoById(req.params.id).then(data => {
+    if (data) {
+      res.json(resBody(200, data))
+    } else {
+      res.json({ code: 204, userMsg: '未查询到该商品信息' })
+    }
+  }).catch(err => {
+    res.json(resBody(500))
+  })
+})
+
+// 新增或编辑商品信息
+app.post('/api/product/addOrUpdate', (req, res) => {
+  productService.addOrUpdateProduct(req.body).then(data => {
+    if (data.dataValues) {
+      res.json(resBody(200, data.dataValues, '保存成功'))
+    } else {
+      res.json(resBody(200, req.body, '保存成功'))
+    }
+  })
+    .catch(err => {
+      res.json(resBody(500))
+    })
+})
+
 module.exports = app

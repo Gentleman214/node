@@ -7,10 +7,14 @@ var getSupplier = function (params) {
   let offset = (params.current - 1) * params.size || 0
   let limit = params.size || 10
   let name = params.name
+  let contact_person = params.contact_person
   return Supplier.findAndCountAll({
     where: {
       name: {
         [Op.like]: '%' + name + '%'
+      },
+      contact_person: {
+        [Op.like]: '%' + contact_person + '%'
       }
     },
     offset,

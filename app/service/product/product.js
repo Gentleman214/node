@@ -6,12 +6,16 @@ const Op = Sequelize.Op
 var getProductList = function (params) {
   let offset = (params.current - 1) * params.size || 0
   let limit = params.size || 10
+  let id = params.id || ''
   let name = params.name || ''
   let category_id = params.category || ''
   let supplier = params.supplier
   if (supplier.length) {
     return Product.findAndCountAll({
       where: {
+        id: {
+          [Op.like]: id + '%'
+        },
         name: {
           [Op.like]:'%' + name + '%'
         },
@@ -29,6 +33,9 @@ var getProductList = function (params) {
   } else {
     return Product.findAndCountAll({
       where: {
+        id: {
+          [Op.like]: id + '%'
+        },
         name: {
           [Op.like]:'%' + name + '%'
         },
@@ -43,8 +50,65 @@ var getProductList = function (params) {
   }
 }
 
+// 根据ID获取商品信息
+var getProductInfoById = function (id) {
+  return Product.findOne({
+    where: {
+      id: id
+    }
+  })
+}
+
+// 新增或编辑商品信息
+var addOrUpdateProduct = function (params) {
+  if (params.id) {
+    return Product.update({
+      name: params.name,
+      category: params.category,
+      category_id: params.category_id,
+      supplier_id: params.supplier_id,
+      supplier_name: params.supplier_name,
+      stock_num: params.stock_num,
+      place: params.place,
+      spec: params.spec,
+      pack: params.pack,
+      unit: params.unit,
+      price: params.price,
+      remark: params.remark,
+      manufacture_date:params.manufacture_date,
+      expiration_date: params.expiration_date,
+      quality_guarantee_period: params.quality_guarantee_period
+    },
+      {
+        where: {
+          id: params.id
+        }
+      })
+  } else {
+    return Product.create({
+      name: params.name,
+      category: params.category,
+      category_id: params.category_id,
+      supplier_id: params.supplier_id,
+      supplier_name: params.supplier_name,
+      stock_num: params.stock_num,
+      place: params.place,
+      spec: params.spec,
+      pack: params.pack,
+      unit: params.unit,
+      price: params.price,
+      remark: params.remark,
+      manufacture_date:params.manufacture_date,
+      expiration_date: params.expiration_date,
+      quality_guarantee_period: params.quality_guarantee_period
+    })
+  }
+}
+
 var productService = {
-  getProductList // 分页获取商品信息信息
+  getProductList, // 分页获取商品信息信息
+  getProductInfoById,
+  addOrUpdateProduct
 }
 module.exports = productService
 
