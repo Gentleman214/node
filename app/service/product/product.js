@@ -105,10 +105,32 @@ var addOrUpdateProduct = function (params) {
   }
 }
 
+// 关键字（商品编号和商品名）搜索商品
+var getProductByIdOrName = function (keywords) {
+  return Product.findAll({
+    where: {
+      [Op.or]: [
+        {
+          id: {
+            [Op.like]:'%' + keywords + '%'
+          }
+        },
+        {
+          name: {
+            [Op.like]:'%' + keywords + '%'
+          }
+        }
+      ]
+    },
+    attributes: [ 'id', 'name' ]
+  })
+}
+
 var productService = {
   getProductList, // 分页获取商品信息信息
   getProductInfoById,
-  addOrUpdateProduct
+  addOrUpdateProduct,
+  getProductByIdOrName
 }
 module.exports = productService
 

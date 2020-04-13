@@ -45,4 +45,18 @@ app.post('/api/product/addOrUpdate', (req, res) => {
     })
 })
 
+// 关键字搜索（商品编号/商品名）
+app.get('/api/product/keywords/:keywords', (req, res) => {
+  productService.getProductByIdOrName(req.params.keywords).then(data => {
+    let resData = []
+    JSON.parse(JSON.stringify(data)).forEach(item => {
+      resData.push(`${item.id}-${item.name}`)
+    })
+    res.json(resBody(200, resData))
+  })
+    .catch(err => {
+      res.json(resBody(500))
+    })
+})
+
 module.exports = app
