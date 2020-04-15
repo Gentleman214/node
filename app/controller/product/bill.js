@@ -31,4 +31,28 @@ app.post('/api/product/bill/list', (req, res) => {
       res.json(resBody(500))
     })
 })
+
+// 近一周销量统计
+app.get('/api/product/bill/salesVolumeStatistics/:type', (req, res) => {
+  billService.salesVolumeStatistics(req.params.type).then(data => {
+    let resData = JSON.parse(JSON.stringify(data))
+    let resArr = []
+    resData.forEach(item => {
+      if (item.length) {
+        let value = 0
+        item = item.forEach(element => value += element.num)
+        resArr.push(value)
+      } else {
+        resArr.push(0)
+      }
+    })
+    res.json(resBody(200, resArr))
+  })
+    .catch(err => {
+      console.log(err)
+      res.json(resBody(500))
+    })
+})
+
+
 module.exports = app

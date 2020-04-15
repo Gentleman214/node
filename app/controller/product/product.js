@@ -59,4 +59,14 @@ app.get('/api/product/keywords/:keywords', (req, res) => {
     })
 })
 
+// 库存盘点
+app.post('/api/product/checkStock', (req, res) => {
+  productService.checkStock(req.body).then(data => {
+    res.json(resBody(200, { 'records': data.rows, 'total': data.count }))
+  })
+    .catch(err => {
+      res.json(resBody(500))
+    })
+})
+
 module.exports = app

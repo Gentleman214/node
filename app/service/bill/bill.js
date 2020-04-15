@@ -53,12 +53,12 @@ var getBillList = function (params) {
           [Op.or]: [
             {
               product_id: {
-                [Op.like]:'%' + product + '%'
+                [Op.like]: '%' + product + '%'
               },
             },
             {
               product_name: {
-                [Op.like]:'%' + product + '%'
+                [Op.like]: '%' + product + '%'
               }
             }
           ]
@@ -67,12 +67,12 @@ var getBillList = function (params) {
           [Op.or]: [
             {
               operator_id: {
-                [Op.like]:'%' + operator + '%'
+                [Op.like]: '%' + operator + '%'
               },
             },
             {
               operator_name: {
-                [Op.like]:'%' + operator + '%'
+                [Op.like]: '%' + operator + '%'
               }
             }
           ]
@@ -87,9 +87,30 @@ var getBillList = function (params) {
   })
 }
 
+// 近一周销量统计
+var salesVolumeStatistics = function (type) {
+  let now = new Date().toLocaleString()
+  let promiseList = []
+  for (let i = 7; i >= 0; i--) {
+    promiseList.push(Bill.findAll({
+      where: {
+        type: type,
+        time: {
+          [Op.lt]: new Date(new Date(now) - i * 24 * 60 * 60 * 1000),
+          [Op.gt]: new Date(new Date(now) - (i+1)* 24 * 60 * 60 * 1000)
+        }
+      },
+      attributes: [['product_num', 'num']]
+    }))
+  }
+  return Promise.all(promiseList)
+}
+
+
 var billService = {
   addBill,
-  getBillList
+  getBillList,
+  salesVolumeStatistics
 }
 module.exports = billService
 

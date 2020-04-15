@@ -17,7 +17,7 @@ var getProductList = function (params) {
           [Op.like]: id + '%'
         },
         name: {
-          [Op.like]:'%' + name + '%'
+          [Op.like]: '%' + name + '%'
         },
         category_id: {
           [Op.like]: category_id + '%'
@@ -37,7 +37,7 @@ var getProductList = function (params) {
           [Op.like]: id + '%'
         },
         name: {
-          [Op.like]:'%' + name + '%'
+          [Op.like]: '%' + name + '%'
         },
         category_id: {
           [Op.like]: category_id + '%'
@@ -75,7 +75,7 @@ var addOrUpdateProduct = function (params) {
       unit: params.unit,
       price: params.price,
       remark: params.remark,
-      manufacture_date:params.manufacture_date,
+      manufacture_date: params.manufacture_date,
       expiration_date: params.expiration_date,
       quality_guarantee_period: params.quality_guarantee_period
     },
@@ -98,7 +98,7 @@ var addOrUpdateProduct = function (params) {
       unit: params.unit,
       price: params.price,
       remark: params.remark,
-      manufacture_date:params.manufacture_date,
+      manufacture_date: params.manufacture_date,
       expiration_date: params.expiration_date,
       quality_guarantee_period: params.quality_guarantee_period
     })
@@ -112,25 +112,79 @@ var getProductByIdOrName = function (keywords) {
       [Op.or]: [
         {
           id: {
-            [Op.like]:'%' + keywords + '%'
+            [Op.like]: '%' + keywords + '%'
           }
         },
         {
           name: {
-            [Op.like]:'%' + keywords + '%'
+            [Op.like]: '%' + keywords + '%'
           }
         }
       ]
     },
-    attributes: [ 'id', 'name' ]
+    attributes: ['id', 'name']
   })
+}
+
+// 库存盘点
+var checkStock = function (params) {
+  let offset = (params.current - 1) * params.size || 0
+  let limit = params.size || 10
+  let type = params.type
+  let num = params.num
+  if (type === 1) {
+    return Product.findAndCountAll({
+      where: {
+        stock_num: {
+          [Op.lte]: num
+        }
+      },
+      offset,
+      limit: limit,
+      attributes: ['id', 'name', 'category', ['supplier_name', 'supplier'], 'stock_num']
+    })
+  }
+  if (type === 2) {
+    return Product.findAndCountAll({
+      where: {
+        [Op.and]: [
+          {
+            stock_num: {
+              [Op.gt]: num[0]
+            }
+          },
+          {
+            stock_num: {
+              [Op.lt]: num[1]
+            }
+          }
+        ]
+      },
+      offset,
+      limit: limit,
+      attributes: ['id', 'name', 'category', ['supplier_name', 'supplier'], 'stock_num']
+    })
+  }
+  if (type === 3) {
+    return Product.findAndCountAll({
+      where: {
+        stock_num: {
+          [Op.gte]: num
+        }
+      },
+      offset,
+      limit: limit,
+      attributes: ['id', 'name', 'category', ['supplier_name', 'supplier'], 'stock_num']
+    })
+  }
 }
 
 var productService = {
   getProductList, // 分页获取商品信息信息
   getProductInfoById,
   addOrUpdateProduct,
-  getProductByIdOrName
+  getProductByIdOrName,
+  checkStock
 }
 module.exports = productService
 
