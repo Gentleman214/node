@@ -18,7 +18,7 @@ var Bill = sequelize.define('bill', {
   product_price: Sequelize.FLOAT(10, 2), // 单价
   time: {
     type: Sequelize.DATE(),
-    defaultValue: Date.now()
+    defaultValue: Sequelize.NOW()
   }, // 操作时间
   operator_id: Sequelize.INTEGER(5),
   operator_name: Sequelize.STRING(20)
