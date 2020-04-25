@@ -71,4 +71,29 @@ app.get('/api/role/menu/:id', (req, res) => { // 根据权限id获取菜单
     res.json(resBody(500))
   })
 })
+
+app.post('/api/role/addOrUpdate', (req, res) => {
+  roleService.addOrUpdateRole(req.body).then(data => {
+    if (data.dataValues) {
+      res.json(resBody(200, data.dataValues, '保存成功'))
+    } else {
+      res.json(resBody(200, req.body, '保存成功'))
+    }
+  })
+    .catch(err => {
+      res.json(resBody(500))
+    })
+})
+
+app.post('/api/role/menu/edit', (req, res) => {
+  roleService.editMenu(req.body).then(data => {
+    if (data.length) {
+      res.json(resBody(200, req.body, '保存成功'))
+    }
+  })
+    .catch(err => {
+      res.json(resBody(500))
+    })
+})
+
 module.exports = app

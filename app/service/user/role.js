@@ -31,11 +31,42 @@ var getMenuByAuthorityId = async function (id) { // 根据权限id获取菜单
     attributes: [ ['id', 'key'], ['pid', 'parentId'], ['name', 'title'], ['index', 'sortIndex'],'children', 'icon', 'link' ]
   })
 }
+
+var addOrUpdateRole = function (params) {
+  if(!params.id) {
+    return Role.create({
+      id: params.id,
+      name: params.name,
+      menu: params.menu
+    })
+  } else {
+    return Role.update({
+      name: params.name,
+      menu: params.menu
+    }, {
+      where: {
+        id: Number(params.id)
+      }
+    })
+  }
+}
+
+var editMenu = function (params) {
+  return Menu.update({
+    name: params.name
+  }, {
+    where: {
+      id: params.id
+    }
+  })
+}
+
 var roleService = {
   getRoleList, // 查询
   getMenu, // 获取所有菜单
-  getMenuByAuthorityId // 根据权限ID获取菜单
+  getMenuByAuthorityId, // 根据权限ID获取菜单
+  addOrUpdateRole, // 新增或编辑角色
+  editMenu // 编辑菜单
 }
 module.exports = roleService
-
 
